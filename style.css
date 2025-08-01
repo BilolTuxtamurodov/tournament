@@ -1,0 +1,127 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    color: #2d3436;
+}
+
+h1 {
+    text-align: center;
+    color: #0984e3;
+    margin-bottom: 20px;
+}
+
+/* Jadval */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #dfe6e9;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #74b9ff;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Inputlar */
+input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #dcdde1;
+    border-radius: 4px;
+    text-align: center;
+}
+
+select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #b2bec3;
+}
+
+/* Tugmalar */
+button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-update {
+    background-color: #00b894;
+}
+
+.btn-update:hover {
+    background-color: #019875;
+}
+
+.btn-reset {
+    background-color: #d63031;
+}
+
+.btn-reset:hover {
+    background-color: #c0392b;
+}
+
+.btn-export {
+    background-color: #0984e3;
+    margin-left: 10px;
+}
+
+.btn-export:hover {
+    background-color: #3498db;
+}
+
+/* Header qatori */
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+/* Jamoa holati */
+.eliminated {
+    background-color: #d63031 !important;
+    color: white;
+}
+
+.alive {
+    background-color: #00b894 !important;
+    color: white;
+}
+
+/* Moslashuvchanlik (Responsive) */
+@media (max-width: 768px) {
+    .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    input[type="number"], select {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

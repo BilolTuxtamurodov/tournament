@@ -1,0 +1,233 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>PUBG Admin</title>
+    <style>
+        body {
+            background: #121212;
+            color: #f0f0f0;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .team-card {
+            background: #1e1e1e;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            color: #ccc;
+        }
+        button {
+            background: #ffcc00;
+            color: #121212;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1>PUBG Admin Panel</h1>
+<div class="controls">
+    <button onclick="resetData()">Reset</button>
+    <button onclick="exportCSV()">Export CSV</button>
+</div>
+<div class="team-control" id="controls"></div>
+
+<script>
+    const teamCount = 5;
+    let eliminatedCounter = 0;
+    const teams1 = [
+        { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+        { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 }
+        // Istasangiz ko‘proq jamoa qo‘shing
+    ];
+
+    let teams = JSON.parse(localStorage.getItem("teamsData")) ||  teams1;
+
+    function save() {
+        localStorage.setItem("teamsData", JSON.stringify(teams));
+        window.dispatchEvent(new Event("storage")); // Trigger sync for scoreboard
+    }
+
+    function calculatePlace() {
+        const eliminated = teams.filter(t => t.eliminated === 4);
+        const alive = teams.filter(t => t.eliminated < 4);
+
+        if (alive.length === 1) {
+            alive[0].place = 1;
+            eliminated.sort((a, b) => b.eliminatedOrder - a.eliminatedOrder).forEach((t, i) => {
+                t.place = i + 2;
+            });
+        } else if (alive.length === 0) {
+            eliminated.sort((a, b) => b.eliminatedOrder - a.eliminatedOrder).forEach((t, i) => {
+                t.place = i + 1;
+            });
+        } else {
+            alive.forEach(t => t.place = 0);
+            eliminated.sort((a, b) => b.eliminatedOrder - a.eliminatedOrder).forEach((t, i) => {
+                t.place = alive.length + i + 1;
+            });
+        }
+    }
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateAll() {
+        calculatePlace();
+        calculatePts();
+        save();
+        renderControls();
+    }
+
+    function renderControls() {
+        const container = document.getElementById("controls");
+        container.innerHTML = "";
+
+        teams.forEach(t => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            card.innerHTML = `
+          <h3 style="color:#ffcc00;">${t.name}</h3>
+          <label>Kills:</label>
+          <input type="number" value="${t.kills}" min="0" onchange="updateKill(${t.id}, this.value)" />
+          <label>Eliminated Players:</label>
+          <input type="number" value="${t.eliminated}" min="0" max="4" onchange="updateElim(${t.id}, this.value)" />
+        `;
+            container.appendChild(card);
+        });
+    }
+
+    function updateKill(id, val) {
+        const t = teams.find(t => t.id === id);
+        t.kills = parseInt(val) || 0;
+        updateAll();
+    }
+
+    function updateElim(id, val) {
+        const t = teams.find(t => t.id === id);
+        const newVal = parseInt(val) || 0;
+
+        if (newVal === 4 && t.eliminated < 4 && t.eliminatedOrder === null) {
+            t.eliminatedOrder = eliminatedCounter++;
+        }
+        if (newVal < 4 && t.eliminated === 4) {
+            t.eliminatedOrder = null;
+        }
+
+        t.eliminated = newVal;
+        updateAll();
+    }
+
+    function resetData() {
+        if (confirm("Barchasi o‘chadi. Davom etamizmi?")) {
+            eliminatedCounter = 0;
+            teams = [
+                { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
+                { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 }
+                // Istasangiz ko‘proq jamoa qo‘shing
+            ];
+            save();
+            renderControls();
+        }
+    }
+
+    /*function exportCSV() {
+        let csv = "Team,Kills,Place,PTS,Eliminated\n";
+        teams.forEach(t => {
+            csv += `${t.name},${t.kills},${t.place},${t.pts},${t.eliminated}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "pubg_tournament.csv";
+        link.click();
+    }*/
+    function exportCSV() {
+        let csv = "Name,Place,PTS,Kills,Eliminated\n"; // Ustun sarlavhalari
+        teams.forEach(t => {
+            csv += `${t.name},${t.place},${t.pts},${t.kills},${t.eliminated}\n`; // Ma'lumotlar to'g'ri tartibda
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "pubg_tournament.csv";
+        link.click();
+    }
+
+
+
+
+
+
+    renderControls();
+    updateAll();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>

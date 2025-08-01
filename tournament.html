@@ -1,0 +1,1355 @@
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PUBG Mobile Tournament Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: #444;
+            color: #ffcc00;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .team-card {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        label {
+            display: block;
+            margin-top: 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #ffcc00;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>PUBG Tournament Admin Panel</h1>
+    <div class="team-control" id="teamControls"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Kills</th>
+            <th>Place</th>
+            <th>PTS</th>
+        </tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+    </table>
+</div>
+
+<script>
+    const teamCount = 20;
+    const teams = Array.from({ length: teamCount }, (_, i) => ({
+        id: i, // unique ID
+        name: `Team ${i + 1}`,
+        kills: 0,
+        eliminated: 0,
+        place: 0,
+        pts: 0,
+    }));
+
+    const scoreboard = document.getElementById("scoreboard");
+    const teamControls = document.getElementById("teamControls");
+
+    function calculatePlace() {
+        const aliveTeams = teams.filter(t => t.eliminated < 4);
+        const deadTeams = teams.filter(t => t.eliminated === 4);
+        let placeCounter = teamCount;
+
+        deadTeams.sort((a, b) => b.kills - a.kills);
+        deadTeams.forEach(t => {
+            t.place = placeCounter&#45;&#45;;
+        });
+
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+        }
+    }
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateScoreboard() {
+        calculatePlace();
+        calculatePts();
+
+        const sortedTeams = [...teams].sort((a, b) => b.pts - a.pts);
+
+        scoreboard.innerHTML = "";
+        sortedTeams.forEach((t, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${t.name}</td>
+      <td>${t.kills}</td>
+      <td>${t.place}</td>
+      <td>${t.pts}</td>
+    `;
+            scoreboard.appendChild(row);
+        });
+    }
+
+
+    function renderControls() {
+        teamControls.innerHTML = "";
+        teams.forEach((t) => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            const killsInput = document.createElement("input");
+            killsInput.type = "number";
+            killsInput.min = "0";
+            killsInput.value = t.kills;
+            killsInput.addEventListener("input", (e) => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.kills = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const elimInput = document.createElement("input");
+            elimInput.type = "number";
+            elimInput.min = "0";
+            elimInput.max = "4";
+            elimInput.value = t.eliminated;
+            elimInput.addEventListener("input", (e) => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.eliminated = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const teamName = document.createElement("h3");
+            teamName.textContent = t.name;
+
+            const killLabel = document.createElement("label");
+            killLabel.textContent = "Kills:";
+
+            const elimLabel = document.createElement("label");
+            elimLabel.textContent = "Eliminated Players:";
+
+            card.appendChild(teamName);
+            card.appendChild(killLabel);
+            card.appendChild(killsInput);
+            card.appendChild(elimLabel);
+            card.appendChild(elimInput);
+
+            teamControls.appendChild(card);
+        });
+
+    }
+
+    renderControls();
+    updateScoreboard();
+</script>
+</body>
+</html>
+
+
+
+-->
+
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PUBG Mobile Tournament Admin Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        th {
+            background-color: #ffcc00;
+            color: #121212;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .team-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+        }
+        label {
+            display: block;
+            margin-top: 5px;
+            color: #ccc;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background-color: #ffcc00;
+            color: #121212;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .logo {
+            max-width: 150px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="logo.png" alt="Tournament Logo" class="logo" />
+    <h1>PUBG Tournament Admin Panel</h1>
+    <div class="team-control" id="teamControls"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Kills</th>
+            <th>Place</th>
+            <th>PTS</th>
+        </tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+    </table>
+</div>
+
+<script>
+    const teamCount = 20;
+    const teams = Array.from({ length: teamCount }, (_, i) => ({
+        id: i,
+        name: `Team ${i + 1}`,
+        kills: 0,
+        eliminated: 0,
+        place: 0,
+        pts: 0,
+    }));
+
+    const scoreboard = document.getElementById("scoreboard");
+    const teamControls = document.getElementById("teamControls");
+
+    /*function calculatePlace() {
+        const aliveTeams = teams.filter(t => t.eliminated < 4);
+        const deadTeams = teams.filter(t => t.eliminated === 4);
+        let placeCounter = teamCount;
+
+        deadTeams.sort((a, b) => b.kills - a.kills);
+        deadTeams.forEach(t => {
+            t.place = placeCounter&#45;&#45;;
+        });
+
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+        } else if (aliveTeams.length === 0) {
+            // Agar barcha yo'q qilingan bo‘lsa
+            const allTeams = [...deadTeams];
+            allTeams.sort((a, b) => b.kills - a.kills);
+            allTeams.forEach((t, i) => {
+                t.place = teamCount - i;
+            });
+        }
+    }*/
+
+    function calculatePlace() {
+        // Jamoalarni guruhlash: tirik va to‘liq yo‘q qilinganlar
+        const aliveTeams = teams.filter(t => t.eliminated < 4);
+        const deadTeams = teams.filter(t => t.eliminated === 4);
+
+        // Har safar boshlashdan avval place ni tozalash
+        teams.forEach(t => t.place = 0);
+
+        // Faol jamoa faqat 1 dona bo‘lsa, uni 1-o‘ringa qo‘yamiz
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+
+            // Yo‘q qilinganlarni kills bo‘yicha tartiblab pastdan yuqoriga joylaymiz
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        } else if (aliveTeams.length === 0) {
+            // Barcha jamoalar yo‘q qilingan — kills bo‘yicha joylash
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        } else {
+            // Faol jamoalar 1 tadan ko‘p bo‘lsa: faqat yo‘q qilinganlarni joylash
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        }
+    }
+
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateScoreboard() {
+        calculatePlace();
+        calculatePts();
+
+        const sortedTeams = [...teams].sort((a, b) => b.pts - a.pts);
+
+        scoreboard.innerHTML = "";
+        sortedTeams.forEach((t, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${t.name}</td>
+                <td>${t.kills}</td>
+                <td>${t.place}</td>
+                <td>${t.pts}</td>
+            `;
+            scoreboard.appendChild(row);
+        });
+    }
+
+    function renderControls() {
+        teamControls.innerHTML = "";
+        teams.forEach((t) => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            const killsInput = document.createElement("input");
+            killsInput.type = "number";
+            killsInput.min = "0";
+            killsInput.value = t.kills;
+            killsInput.addEventListener("input", (e) => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.kills = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const elimInput = document.createElement("input");
+            elimInput.type = "number";
+            elimInput.min = "0";
+            elimInput.max = "4";
+            elimInput.value = t.eliminated;
+            elimInput.addEventListener("input", (e) => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.eliminated = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const teamName = document.createElement("h3");
+            teamName.textContent = t.name;
+            teamName.style.color = "#ffcc00";
+
+            const killLabel = document.createElement("label");
+            killLabel.textContent = "Kills:";
+
+            const elimLabel = document.createElement("label");
+            elimLabel.textContent = "Eliminated Players:";
+
+            card.appendChild(teamName);
+            card.appendChild(killLabel);
+            card.appendChild(killsInput);
+            card.appendChild(elimLabel);
+            card.appendChild(elimInput);
+
+            teamControls.appendChild(card);
+        });
+    }
+
+    renderControls();
+    updateScoreboard();
+</script>
+</body>
+</html>-->
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PUBG Mobile Tournament Admin Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        th {
+            background-color: #ffcc00;
+            color: #121212;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .team-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+        }
+        label {
+            display: block;
+            margin-top: 5px;
+            color: #ccc;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 14px;
+            background-color: #ffcc00;
+            color: #121212;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .logo {
+            max-width: 150px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="logo.png" alt="Tournament Logo" class="logo" />
+    <h1>PUBG Tournament Admin Panel</h1>
+    <div>
+        <button onclick="exportTable()">Export Table</button>
+        <button onclick="resetData()">Restart</button>
+    </div>
+    <div class="team-control" id="teamControls"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Kills</th>
+            <th>Place</th>
+            <th>PTS</th>
+        </tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+    </table>
+</div>
+
+<script>
+    const teamCount = 20;
+    let teams = JSON.parse(localStorage.getItem('teamsData')) || Array.from({ length: teamCount }, (_, i) => ({
+        id: i,
+        name: `Team ${i + 1}`,
+        kills: 0,
+        eliminated: 0,
+        place: 0,
+        pts: 0,
+    }));
+
+    const scoreboard = document.getElementById("scoreboard");
+    const teamControls = document.getElementById("teamControls");
+
+    function saveTeamsToLocalStorage() {
+        localStorage.setItem('teamsData', JSON.stringify(teams));
+    }
+
+    function calculatePlace() {
+        const aliveTeams = teams.filter(t => t.eliminated < 4);
+        const deadTeams = teams.filter(t => t.eliminated === 4);
+        teams.forEach(t => t.place = 0);
+
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        } else if (aliveTeams.length === 0) {
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        } else {
+            const sortedDead = [...deadTeams].sort((a, b) => b.kills - a.kills);
+            let placeCounter = teamCount;
+            sortedDead.forEach(t => t.place = placeCounter&#45;&#45;);
+        }
+    }
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateScoreboard() {
+        calculatePlace();
+        calculatePts();
+        saveTeamsToLocalStorage();
+
+        const sortedTeams = [...teams].sort((a, b) => b.pts - a.pts);
+        scoreboard.innerHTML = "";
+        sortedTeams.forEach((t, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${t.name}</td>
+                <td>${t.kills}</td>
+                <td>${t.place}</td>
+                <td>${t.pts}</td>
+            `;
+            scoreboard.appendChild(row);
+        });
+    }
+
+    function renderControls() {
+        teamControls.innerHTML = "";
+        teams.forEach(t => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            const killsInput = document.createElement("input");
+            killsInput.type = "number";
+            killsInput.min = "0";
+            killsInput.value = t.kills;
+            killsInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.kills = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const elimInput = document.createElement("input");
+            elimInput.type = "number";
+            elimInput.min = "0";
+            elimInput.max = "4";
+            elimInput.value = t.eliminated;
+            elimInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.eliminated = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const teamName = document.createElement("h3");
+            teamName.textContent = t.name;
+            teamName.style.color = "#ffcc00";
+
+            const killLabel = document.createElement("label");
+            killLabel.textContent = "Kills:";
+
+            const elimLabel = document.createElement("label");
+            elimLabel.textContent = "Eliminated Players:";
+
+            card.appendChild(teamName);
+            card.appendChild(killLabel);
+            card.appendChild(killsInput);
+            card.appendChild(elimLabel);
+            card.appendChild(elimInput);
+
+            teamControls.appendChild(card);
+        });
+    }
+
+    function exportTable() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Team Name,Kills,Place,Points,Eliminated Players\n";
+
+        teams.forEach(team => {
+            csvContent += `${team.name},${team.kills},${team.place},${team.pts},${team.eliminated}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "pubg_scoreboard.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function resetData() {
+        if (confirm("Barcha ma'lumotlar o'chiriladi. Davom etasizmi?")) {
+            teams.forEach(team => {
+                team.kills = 0;
+                team.eliminated = 0;
+                team.place = 0;
+                team.pts = 0;
+            });
+            localStorage.removeItem('teamsData');
+            updateScoreboard();
+            renderControls();
+        }
+    }
+
+    renderControls();
+    updateScoreboard();
+</script>
+</body>
+</html>-->
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PUBG Mobile Tournament Admin Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        th {
+            background-color: #ffcc00;
+            color: #121212;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+        .team-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        label {
+            display: block;
+            margin-top: 8px;
+            color: #ccc;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 14px;
+            background-color: #ffcc00;
+            color: #121212;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .logo {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="logo.png" alt="Tournament Logo" class="logo" />
+    <h1>PUBG Tournament Admin Panel</h1>
+    <div>
+        <button onclick="exportTable()">Export Table</button>
+        <button onclick="resetData()">Restart</button>
+    </div>
+    <div class="team-control" id="teamControls"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Kills</th>
+            <th>Place</th>
+            <th>PTS</th>
+        </tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+    </table>
+</div>
+
+<script>
+    const teamCount = 20;
+    let teams = JSON.parse(localStorage.getItem('teamsData')) || Array.from({ length: teamCount }, (_, i) => ({
+        id: i,
+        name: `Team ${i + 1}`,
+        kills: 0,
+        eliminated: 0,
+        place: 0,
+        pts: 0
+    }));
+
+    const scoreboard = document.getElementById("scoreboard");
+    const teamControls = document.getElementById("teamControls");
+
+    function saveTeamsToLocalStorage() {
+        localStorage.setItem('teamsData', JSON.stringify(teams));
+    }
+
+    function calculatePlace() {
+        // Tirik qolgan jamoalarni hisoblaymiz
+        const aliveTeams = teams.filter(t => t.deadCount < 4);
+
+        // Har bir jamoaning place'ini tozalab chiqamiz (elim. bo'lganlarni qayta hisoblash uchun)
+        teams.forEach(t => {
+            if (t.deadCount === 4) {
+                t.place = null; // qayta hisoblanadi
+            }
+        });
+
+        // Elim. bo'lgan jamoalarni yo'q qilinish tartibida saralab chiqamiz
+        const eliminatedTeams = teams
+            .filter(t => t.deadCount === 4 && t.place === null)
+            .sort((a, b) => b.eliminatedOrder - a.eliminatedOrder);
+
+        // Har bir elim. bo'lgan jamoaga place yozamiz
+        eliminatedTeams.forEach((team, index) => {
+            team.place = aliveTeams.length + index + 1;
+        });
+
+        // Agar faqat 1 ta tirik jamoa qolsa, u 1-o‘rinni oladi
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+        }
+
+        // Agar o'yin tugagan bo‘lsa — ya’ni barcha jamoalar elim. bo‘lgan bo‘lsa
+        if (aliveTeams.length === 0) {
+            const remainingTeams = teams.filter(t => t.place === null);
+            remainingTeams.forEach((team, index) => {
+                team.place = index + 1;
+            });
+        }
+    }
+
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateScoreboard() {
+        calculatePlace();
+        calculatePts();
+        saveTeamsToLocalStorage();
+
+        const sortedTeams = [...teams].sort((a, b) => b.pts - a.pts);
+        scoreboard.innerHTML = "";
+        sortedTeams.forEach((t, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${t.name}</td>
+                <td>${t.kills}</td>
+                <td>${t.place}</td>
+                <td>${t.pts}</td>
+            `;
+            scoreboard.appendChild(row);
+        });
+    }
+
+    function renderControls() {
+        teamControls.innerHTML = "";
+        teams.forEach(t => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            const teamName = document.createElement("h3");
+            teamName.textContent = t.name;
+            teamName.style.color = "#ffcc00";
+
+            const killLabel = document.createElement("label");
+            killLabel.textContent = "Kills:";
+            const killsInput = document.createElement("input");
+            killsInput.type = "number";
+            killsInput.min = "0";
+            killsInput.value = t.kills;
+            killsInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.kills = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const elimLabel = document.createElement("label");
+            elimLabel.textContent = "Eliminated Players:";
+            const elimInput = document.createElement("input");
+            elimInput.type = "number";
+            elimInput.min = "0";
+            elimInput.max = "4";
+            elimInput.value = t.eliminated;
+            elimInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.eliminated = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            card.appendChild(teamName);
+            card.appendChild(killLabel);
+            card.appendChild(killsInput);
+            card.appendChild(elimLabel);
+            card.appendChild(elimInput);
+
+            teamControls.appendChild(card);
+        });
+    }
+
+    function exportTable() {
+        let csvContent = "data:text/csv;charset=utf-8,Team Name,Kills,Place,Points,Eliminated Players\n";
+        teams.forEach(team => {
+            csvContent += `${team.name},${team.kills},${team.place},${team.pts},${team.eliminated}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "pubg_scoreboard.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function resetData() {
+        if (confirm("Barcha ma'lumotlar o‘chiriladi. Davom etasizmi?")) {
+            teams.forEach(team => {
+                team.kills = 0;
+                team.eliminated = 0;
+                team.place = 0;
+                team.pts = 0;
+            });
+            localStorage.removeItem('teamsData');
+            updateScoreboard();
+            renderControls();
+        }
+    }
+
+    renderControls();
+    updateScoreboard();
+</script>
+</body>
+</html>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PUBG Mobile Tournament Admin Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        th {
+            background-color: #ffcc00;
+            color: #121212;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        .team-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+        .team-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        label {
+            display: block;
+            margin-top: 8px;
+            color: #ccc;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 14px;
+            background-color: #ffcc00;
+            color: #121212;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .logo {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="logo.png" alt="Tournament Logo" class="logo" />
+    <h1>PUBG Tournament Admin Panel</h1>
+    <div>
+        <button onclick="exportTable()">Export Table</button>
+        <button onclick="resetData()">Restart</button>
+    </div>
+    <div class="team-control" id="teamControls"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Kills</th>
+            <th>Place</th>
+            <th>PTS</th>
+        </tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+    </table>
+</div>
+
+<script>
+    const teamCount = 20;
+    let eliminatedCounter = 0;
+
+    let teams = JSON.parse(localStorage.getItem('teamsData')) || Array.from({ length: teamCount }, (_, i) => ({
+        id: i,
+        name: `Team ${i + 1}`,
+        kills: 0,
+        eliminated: 0,
+        eliminatedOrder: null,  // qo‘shildi
+        place: 0,
+        pts: 0
+    }));
+
+    const scoreboard = document.getElementById("scoreboard");
+    const teamControls = document.getElementById("teamControls");
+
+    function saveTeamsToLocalStorage() {
+        localStorage.setItem('teamsData', JSON.stringify(teams));
+    }
+
+    function calculatePlace() {
+        const eliminatedTeams = teams.filter(t => t.eliminated === 4);
+        const aliveTeams = teams.filter(t => t.eliminated < 4);
+
+        // Faol 1ta jamoa qolgan bo‘lsa — g‘olib
+        if (aliveTeams.length === 1) {
+            aliveTeams[0].place = 1;
+
+            // Eliminated order bo‘yicha teskari o‘rinda (birinchi out bo‘lgan = oxirgi o‘rin)
+            eliminatedTeams
+                .sort((a, b) => b.eliminatedOrder - a.eliminatedOrder)
+                .forEach((team, i) => {
+                    team.place = i + 2; // g‘olibdan keyin
+                });
+        }
+        // Hamma yo‘q qilingan bo‘lsa
+        else if (aliveTeams.length === 0) {
+            eliminatedTeams
+                .sort((a, b) => b.eliminatedOrder - a.eliminatedOrder)
+                .forEach((team, i) => {
+                    team.place = i + 1;
+                });
+        }
+        // Bir nechta tirik jamoa bo‘lsa (hali o‘yin tugamagan)
+        else {
+            aliveTeams.forEach(t => t.place = 0);
+            eliminatedTeams
+                .sort((a, b) => b.eliminatedOrder - a.eliminatedOrder)
+                .forEach((team, i) => {
+                    team.place = aliveTeams.length + i + 1;
+                });
+        }
+    }
+
+
+
+
+    function calculatePts() {
+        teams.forEach(t => {
+            let placePts = 0;
+            switch (t.place) {
+                case 1: placePts = 15; break;
+                case 2: placePts = 10; break;
+                case 3: placePts = 7; break;
+                case 4: placePts = 5; break;
+                case 5: placePts = 2; break;
+                default: placePts = (t.place > 5 && t.place <= teamCount) ? 1 : 0;
+            }
+            t.pts = placePts + (parseInt(t.kills) || 0);
+        });
+    }
+
+    function updateScoreboard() {
+        calculatePlace();
+        calculatePts();
+        saveTeamsToLocalStorage();
+
+        const sortedTeams = [...teams].sort((a, b) => b.pts - a.pts);
+        scoreboard.innerHTML = "";
+        sortedTeams.forEach((t, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${t.name}</td>
+                <td>${t.kills}</td>
+                <td>${t.place}</td>
+                <td>${t.pts}</td>
+            `;
+            scoreboard.appendChild(row);
+        });
+    }
+
+    function renderControls() {
+        teamControls.innerHTML = "";
+        teams.forEach(t => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+
+            const teamName = document.createElement("h3");
+            teamName.textContent = t.name;
+            teamName.style.color = "#ffcc00";
+
+            const killLabel = document.createElement("label");
+            killLabel.textContent = "Kills:";
+            const killsInput = document.createElement("input");
+            killsInput.type = "number";
+            killsInput.min = "0";
+            killsInput.value = t.kills;
+            killsInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                team.kills = parseInt(e.target.value) || 0;
+                updateScoreboard();
+            });
+
+            const elimLabel = document.createElement("label");
+            elimLabel.textContent = "Eliminated Players:";
+            const elimInput = document.createElement("input");
+            elimInput.type = "number";
+            elimInput.min = "0";
+            elimInput.max = "4";
+            elimInput.value = t.eliminated;
+            elimInput.addEventListener("input", e => {
+                const team = teams.find(tm => tm.id === t.id);
+                const newVal = parseInt(e.target.value) || 0;
+
+                // Agar 4 ga yetgan bo‘lsa va oldin yo‘q qilinmagan bo‘lsa
+                if (newVal === 4 && team.eliminated < 4 && team.eliminatedOrder === null) {
+                    team.eliminatedOrder = eliminatedCounter++;
+                }
+
+                // Agar kamaytirilgan bo‘lsa
+                if (newVal < 4 && team.eliminated === 4) {
+                    team.eliminatedOrder = null;
+                }
+
+                team.eliminated = newVal;
+                updateScoreboard();
+            });
+
+
+            card.appendChild(teamName);
+            card.appendChild(killLabel);
+            card.appendChild(killsInput);
+            card.appendChild(elimLabel);
+            card.appendChild(elimInput);
+
+            teamControls.appendChild(card);
+        });
+    }
+
+    function exportTable() {
+        let csvContent = "data:text/csv;charset=utf-8,Team Name,Kills,Place,Points,Eliminated Players\n";
+        teams.forEach(team => {
+            csvContent += `${team.name},${team.kills},${team.place},${team.pts},${team.eliminated}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "pubg_scoreboard.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function resetData() {
+        if (confirm("Barcha ma'lumotlar o‘chiriladi. Davom etasizmi?")) {
+            eliminatedCounter = 0;
+            teams.forEach(team => {
+                team.kills = 0;
+                team.eliminated = 0;
+                team.place = 0;
+                team.pts = 0;
+                team.eliminatedOrder = null;
+            });
+            localStorage.removeItem('teamsData');
+            updateScoreboard();
+            renderControls();
+        }
+    }
+
+
+    renderControls();
+    updateScoreboard();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

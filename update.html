@@ -66,19 +66,19 @@
 <div class="team-control" id="controls"></div>
 
 <script>
-    const teamCount = 5;
+    const teamCount = 9;
     let eliminatedCounter = 0;
     const teams1 = [
-        { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-        { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 }
+        { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 , playerCount: 2},
+        { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+        { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 , playerCount: 3},
+        { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+        { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+        { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+        { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 2 },
+        { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+        { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+        { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 }
         // Istasangiz ko‘proq jamoa qo‘shing
     ];
 
@@ -90,8 +90,8 @@
     }
 
     function calculatePlace() {
-        const eliminated = teams.filter(t => t.eliminated === 4);
-        const alive = teams.filter(t => t.eliminated < 4);
+        const eliminated = teams.filter(t => t.eliminated === t.playerCount);
+        const alive = teams.filter(t => t.eliminated < t.playerCount);
 
         if (alive.length === 1) {
             alive[0].place = 1;
@@ -145,7 +145,7 @@
           <label>Kills:</label>
           <input type="number" value="${t.kills}" min="0" onchange="updateKill(${t.id}, this.value)" />
           <label>Eliminated Players:</label>
-          <input type="number" value="${t.eliminated}" min="0" max="4" onchange="updateElim(${t.id}, this.value)" />
+          <input type="number" value="${t.eliminated}" min="0" max="${t.playerCount}" onchange="updateElim(${t.id}, this.value)" />
         `;
             container.appendChild(card);
         });
@@ -157,7 +157,7 @@
         updateAll();
     }
 
-    function updateElim(id, val) {
+    /*function updateElim(id, val) {
         const t = teams.find(t => t.id === id);
         const newVal = parseInt(val) || 0;
 
@@ -170,22 +170,38 @@
 
         t.eliminated = newVal;
         updateAll();
+    }*/
+
+    function updateElim(id, val) {
+        const t = teams.find(t => t.id === id);
+        const newVal = parseInt(val) || 0;
+
+        if (newVal >= t.playerCount && t.eliminated < t.playerCount && t.eliminatedOrder === null) {
+            t.eliminatedOrder = eliminatedCounter++;
+        }
+        if (newVal < t.playerCount && t.eliminated >= t.playerCount) {
+            t.eliminatedOrder = null;
+        }
+
+        t.eliminated = newVal;
+        updateAll();
     }
+
 
     function resetData() {
         if (confirm("Barchasi o‘chadi. Davom etamizmi?")) {
             eliminatedCounter = 0;
             teams = [
-                { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 },
-                { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 }
+                { id: 0, name: 'Eagle Squad', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 , playerCount: 2},
+                { id: 1, name: 'Shadow Hunters', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+                { id: 2, name: 'Alpha Force', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0 , playerCount: 3},
+                { id: 3, name: 'Phoenix Crew', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+                { id: 4, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+                { id: 5, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+                { id: 6, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 2 },
+                { id: 7, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 },
+                { id: 8, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 3 },
+                { id: 9, name: 'Storm Wolves', kills: 0, eliminated: 0, eliminatedOrder: null, place: 0, pts: 0, playerCount: 4 }
                 // Istasangiz ko‘proq jamoa qo‘shing
             ];
             save();
@@ -193,18 +209,6 @@
         }
     }
 
-    /*function exportCSV() {
-        let csv = "Team,Kills,Place,PTS,Eliminated\n";
-        teams.forEach(t => {
-            csv += `${t.name},${t.kills},${t.place},${t.pts},${t.eliminated}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "pubg_tournament.csv";
-        link.click();
-    }*/
     function exportCSV() {
         let csv = "Name,Place,PTS,Kills,Eliminated\n"; // Ustun sarlavhalari
         teams.forEach(t => {
